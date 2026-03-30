@@ -48,25 +48,25 @@
         <div class="infoup">
             <form id="signupForm">
                 <label>Usuario: </label><br>
-                <input type="text" name="usuario"><br><br>
+                <input type="text" name="usuario" required><br><br>
 
                 <label>Contraseña:</label><br>
-                <input type="password" name="clave"><br><br>
+                <input type="password" name="clave" required><br><br>
 
                 <label>Nombre</label><br>
-                <input type="text" name="name"><br><br>
+                <input type="text" name="name" required><br><br>
 
                 <label>Apellidos</label><br>
-                <input type="text" name="lnames"><br><br>
+                <input type="text" name="lnames" required><br><br>
 
                 <label>Fecha de nacimiento</label><br>
-                <input type="datetime" name="fecnacim"><br><br>
+                <input type="datetime" name="fecnacim" required><br><br>
 
                 <label>Foto de perfil</label><br>
-                <input type="file" id="foto" accept="image/*"><br><br>
+                <input type="file" id="foto" accept="image/*" required><br><br>
 
                 <button type="submit">Registrar</button>
-            </form>
+            </form><br>
             <button onclick="window.location.href='inicio.html'">Volver</button><br><br>
         </div>
     </body>
