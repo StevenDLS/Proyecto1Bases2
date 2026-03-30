@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>
-            Sistema de cursos
-        </title>
+        <Title>
+            Inciar Sesión
+        </Title>
         <style>
             body {
             margin: 0;
@@ -44,14 +44,18 @@
         </style>
     </head>
     <body>
-        <h1>Sistema de cursos</h1>
+        <h1>Iniciar Sesión</h1>
+        <div class="infoinit">
+            <form id="loginForm">
+                <label>Usuario: </label><br>
+                <input type="text" name="usuario"><br><br>
 
-        <div class="botones">
-            <button onclick="window.location.href='SignIn.html'">Iniciar sesión</button>
-            <button onclick="window.location.href='SignUp.html'">Registrarse</button>
+                <label>Contraseña:</label><br>
+                <input type="password" name="clave"><br><br>
+
+                <button type="submit">Iniciar sesión</button>
+            </form>
+            <button onclick="window.location.href='inicio.html'">Volver</button><br><br>
         </div>
     </body>
-    <script src="indice.js">
-
-    </script>
 </html>

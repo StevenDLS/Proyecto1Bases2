@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>
-            Sistema de cursos
-        </title>
+        <Title>
+            Registrarse
+        </Title>
         <style>
             body {
             margin: 0;
@@ -44,14 +44,30 @@
         </style>
     </head>
     <body>
-        <h1>Sistema de cursos</h1>
+        <h1>Registrarse</h1>
+        <div class="infoup">
+            <form id="signupForm">
+                <label>Usuario: </label><br>
+                <input type="text" name="usuario"><br><br>
 
-        <div class="botones">
-            <button onclick="window.location.href='SignIn.html'">Iniciar sesión</button>
-            <button onclick="window.location.href='SignUp.html'">Registrarse</button>
+                <label>Contraseña:</label><br>
+                <input type="password" name="clave"><br><br>
+
+                <label>Nombre</label><br>
+                <input type="text" name="name"><br><br>
+
+                <label>Apellidos</label><br>
+                <input type="text" name="lnames"><br><br>
+
+                <label>Fecha de nacimiento</label><br>
+                <input type="datetime" name="fecnacim"><br><br>
+
+                <label>Foto de perfil</label><br>
+                <input type="file" id="foto" accept="image/*"><br><br>
+
+                <button type="submit">Registrar</button>
+            </form>
+            <button onclick="window.location.href='inicio.html'">Volver</button><br><br>
         </div>
     </body>
-    <script src="indice.js">
-
-    </script>
 </html>
