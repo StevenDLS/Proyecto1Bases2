@@ -16,13 +16,16 @@ app.listen(PORT, '0.0.0.0', () => {
 
 app.post('/signup', async (req, res) => {
     try {
+        console.log("Body completo:", req.body);
+
         const { username, pass, name, lnames, fecnacim, photo } = req.body;
 
         console.log("Datos recibidos:");
         console.table({ username, pass, name, lnames, fecnacim, photo });
 
         res.json({
-            status: "success"
+            status: "success",
+            data: { username, pass, name, lnames, fecnacim, photo }
         });
     } catch (err) {
         console.error(err);

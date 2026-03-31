@@ -60,7 +60,7 @@
                 <input type="text" id="lnames" required><br><br>
 
                 <label>Fecha de nacimiento</label><br>
-                <input type="datetime" id="fecnacim" required><br><br>
+                <input type="date" id="fecnacim" required><br><br>
 
                 <label>Foto de perfil</label><br>
                 <input type="file" id="foto" accept="image/*" required><br><br>
@@ -79,7 +79,7 @@
             const username = document.getElementById("usuario").value;
             const pass = document.getElementById("clave").value;
             const name = document.getElementById("name").value;
-            const lnames = document.getElementById("lname").value;
+            const lnames = document.getElementById("lnames").value;
             const fecnacim = document.getElementById("fecnacim").value;
             const photo = document.getElementById("foto").value;
 
@@ -95,8 +95,8 @@
 
             if (data.status === "success") {
                 document.getElementById("resultado").textContent =
-                    "Usuario insertado correctamente. ID generado.";
-                document.getElementById("userForm").reset();
+                    "Usuario insertado correctamente.";
+                document.getElementById("signupForm").reset();
             } else {
                 document.getElementById("resultado").textContent =
                     "Error al insertar usuario.";
