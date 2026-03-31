@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 const PORT = 3000;
 
@@ -10,6 +11,7 @@ app.get('/', (req, res) => {
 
 app.get('/inicio', (req, res) => {
   res.sendFile(path.join(__dirname, 'inicio.html'));
+  console.log(path.join(__dirname, 'inicio.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {
