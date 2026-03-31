@@ -6,11 +6,7 @@ const PORT = 3000;
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('Servidor Node.js corriendo en la VM');
-});
-
-app.get('/', function(req, res){
-res.sendFile(__dirname + '/inicio.html');
+    res.sendFile(__dirname + '/inicio.html');
 });
 
 app.listen(PORT, '0.0.0.0', () => {
