@@ -48,19 +48,19 @@
         <div class="infoup">
             <form id="signupForm">
                 <label>Usuario: </label><br>
-                <input type="text" name="usuario" required><br><br>
+                <input type="text" id="usuario" required><br><br>
 
                 <label>Contraseña:</label><br>
-                <input type="password" name="clave" required><br><br>
+                <input type="password" id="clave" required><br><br>
 
                 <label>Nombre</label><br>
-                <input type="text" name="name" required><br><br>
+                <input type="text" id="name" required><br><br>
 
                 <label>Apellidos</label><br>
-                <input type="text" name="lnames" required><br><br>
+                <input type="text" id="lnames" required><br><br>
 
                 <label>Fecha de nacimiento</label><br>
-                <input type="datetime" name="fecnacim" required><br><br>
+                <input type="datetime" id="fecnacim" required><br><br>
 
                 <label>Foto de perfil</label><br>
                 <input type="file" id="foto" accept="image/*" required><br><br>
@@ -68,6 +68,39 @@
                 <button type="submit">Registrar</button>
             </form><br>
             <button onclick="window.location.href='inicio.html'">Volver</button><br><br>
+
+            <p id="resultado"></p>
         </div>
     </body>
+    <script>
+        document.getElementById("signupForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById("usuario").value;
+            const pass = document.getElementById("clave").value;
+            const name = document.getElementById("name").value;
+            const lnames = document.getElementById("lname").value;
+            const fecnacim = document.getElementById("fecnacim").value;
+            const photo = document.getElementById("foto").value;
+
+            const response = await fetch("/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, pass, name, lnames, fecnacim, photo })
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                document.getElementById("resultado").textContent =
+                    "Usuario insertado correctamente. ID generado.";
+                document.getElementById("userForm").reset();
+            } else {
+                document.getElementById("resultado").textContent =
+                    "Error al insertar usuario.";
+            }
+        });
+    </script>
 </html>

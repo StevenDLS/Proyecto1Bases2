@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 app.use(express.json());
 
@@ -10,4 +10,24 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
+
+
+app.post('/signup', async (req, res) => {
+    try {
+        const { username, pass, name, lnames, fecnacim, photo } = req.body;
+
+        console.log("Datos recibidos:");
+        console.table({ username, pass, name, lnames, fecnacim, photo });
+
+        res.json({
+            status: "success"
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            status: "error",
+            message: "No se pudo insertar el usuario"
+        });
+    }
 });
