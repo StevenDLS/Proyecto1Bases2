@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar Cursos — TEC Digitalito</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="dashboard-student.html"><i class="bi bi-mortarboard-fill me-2"></i>TEC Digitalito</a>
+      <div class="ms-auto d-flex gap-2">
+        <a href="enrollment.html" class="btn btn-outline-primary btn-sm" aria-label="Ver carrito de matrícula">
+          <i class="bi bi-cart"></i> Carrito
+        </a>
+        <button class="btn btn-outline-danger btn-sm" id="logoutBtn" aria-label="Cerrar sesión">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <h3 class="mb-3"><i class="bi bi-search me-2"></i>Buscar Cursos</h3>
+
+    <div class="input-group mb-4">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="text" class="form-control form-control-lg" id="searchInput"
+        placeholder="Buscar por nombre, código o descripción..."
+        aria-label="Buscar cursos" autofocus>
+    </div>
+
+    <div id="cartBanner" class="alert alert-info d-none mb-3">
+      <i class="bi bi-cart me-2"></i>Tienes <span id="cartCount">0</span> curso(s) en el carrito.
+      <a href="enrollment.html" class="alert-link">Ver carrito</a>
+    </div>
+
+    <div id="coursesContainer" class="row g-3">
+      <div class="col-12 text-center py-5">
+        <p class="text-muted">Escribe algo para buscar cursos...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    checkAuth();
+
+    let cartCourses = [];
+
+    // Cargar carrito
+    fetch('/api/enrollment/cart').then(r => r.json()).then(cart => {
+      cartCourses = cart.courses || [];
+      updateCartBanner();
+    });
+
+    function updateCartBanner() {
+      const banner = document.getElementById('cartBanner');
+      const count = document.getElementById('cartCount');
+      if (cartCourses.length > 0) {
+        banner.classList.remove('d-none');
+        count.textContent = cartCourses.length;
+      } else {
+        banner.classList.add('d-none');
+      }
+    }
+
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      const q = e.target.value.trim();
+      if (!q) {
+        document.getElementById('coursesContainer').innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted">Escribe algo para buscar cursos...</p></div>';
+        return;
+      }
+      searchTimeout = setTimeout(() => searchCourses(q), 350);
+    });
+
+    async function searchCourses(q) {
+      const container = document.getElementById('coursesContainer');
+      container.innerHTML = '<div class="col-12 text-center py-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Buscando...</span></div></div>';
+      try {
+        const res = await fetch(`/api/courses/search?q=${encodeURIComponent(q)}`);
+        const courses = await res.json();
+        if (!courses.length) {
+          container.innerHTML = '<div class="col-12"><div class="alert alert-warning">No se encontraron cursos para esa búsqueda.</div></div>';
+          return;
+        }
+        container.innerHTML = courses.map(c => {
+          const inCart = cartCourses.includes(c.courseId);
+          return `
+            <div class="col-md-4">
+              <div class="card course-card h-100">
+                ${c.photoFileId ? `<img src="/api/files/${c.photoFileId}" alt="Foto del curso ${c.name}" class="course-img">` : '<div class="course-img bg-light d-flex align-items-center justify-content-center"><i class="bi bi-book fs-1 text-secondary"></i></div>'}
+                <div class="card-body d-flex flex-column">
+                  <span class="badge bg-secondary mb-1">${c.code}</span>
+                  <h5 class="card-title">${c.name}</h5>
+                  <p class="card-text text-muted small flex-grow-1">${c.description || ''}</p>
+                  <p class="text-muted small">Docente: ${c.teacherName || '—'}</p>
+                  <div class="d-flex gap-2 mt-2">
+                    <a href="course-view.html?id=${c.courseId}" class="btn btn-sm btn-outline-primary" aria-label="Ver detalle del curso ${c.name}">
+                      <i class="bi bi-eye"></i> Ver
+                    </a>
+                    <button class="btn btn-sm ${inCart ? 'btn-danger' : 'btn-success'}"
+                      onclick="toggleCart('${c.courseId}', this)"
+                      aria-label="${inCart ? 'Quitar del carrito' : 'Agregar al carrito'} el curso ${c.name}">
+                      <i class="bi bi-${inCart ? 'cart-x' : 'cart-plus'}"></i>
+                      ${inCart ? 'Quitar' : 'Agregar'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+      } catch {
+        container.innerHTML = '<div class="col-12"><div class="alert alert-danger">Error al buscar cursos.</div></div>';
+      }
+    }
+
+    async function toggleCart(courseId, btn) {
+      const inCart = cartCourses.includes(courseId);
+      const method = inCart ? 'DELETE' : 'POST';
+      const res = await fetch(`/api/enrollment/cart/${courseId}`, { method });
+      if (res.ok) {
+        const cart = await res.json();
+        cartCourses = cart.courses || [];
+        updateCartBanner();
+        // Update button
+        const icon = btn.querySelector('i');
+        if (cartCourses.includes(courseId)) {
+          btn.className = 'btn btn-sm btn-danger';
+          btn.innerHTML = '<i class="bi bi-cart-x"></i> Quitar';
+        } else {
+          btn.className = 'btn btn-sm btn-success';
+          btn.innerHTML = '<i class="bi bi-cart-plus"></i> Agregar';
+        }
+      }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+  </script>
+</body>
+</html>

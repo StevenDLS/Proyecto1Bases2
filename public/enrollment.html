@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrito de Matrícula — TEC Digitalito</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="dashboard-student.html"><i class="bi bi-mortarboard-fill me-2"></i>TEC Digitalito</a>
+      <div class="ms-auto">
+        <button class="btn btn-outline-danger btn-sm" id="logoutBtn" aria-label="Cerrar sesión">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="d-flex align-items-center mb-4">
+      <a href="dashboard-student.html" class="btn btn-outline-secondary btn-sm me-3" aria-label="Volver al inicio">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <h3 class="mb-0"><i class="bi bi-cart me-2"></i>Carrito de Matrícula</h3>
+    </div>
+
+    <div class="alert alert-warning">
+      <i class="bi bi-clock me-1"></i>El carrito expira automáticamente después de 30 minutos de inactividad.
+    </div>
+
+    <div id="cartContainer">
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    checkAuth();
+
+    async function loadCart() {
+      const res = await fetch('/api/enrollment/cart');
+      const cart = await res.json();
+      const container = document.getElementById('cartContainer');
+
+      if (!cart.courses || !cart.courses.length) {
+        container.innerHTML = `
+          <div class="text-center py-5">
+            <i class="bi bi-cart-x fs-1 text-muted"></i>
+            <p class="mt-3 text-muted">Tu carrito está vacío.</p>
+            <a href="course-search.html" class="btn btn-primary">Buscar cursos</a>
+          </div>`;
+        return;
+      }
+
+      // Cargar detalles de cada curso
+      const courseDetails = await Promise.all(
+        cart.courses.map(id =>
+          fetch(`/api/courses/${id}`).then(r => r.ok ? r.json() : null)
+        )
+      );
+      const courses = courseDetails.filter(Boolean);
+
+      container.innerHTML = `
+        <div class="row">
+          <div class="col-md-8">
+            <div class="card mb-3">
+              <div class="card-header"><h5 class="mb-0">Cursos en el carrito (${courses.length})</h5></div>
+              <div class="list-group list-group-flush" id="cartList">
+                ${courses.map(c => `
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <span class="badge bg-secondary me-2">${c.code}</span>
+                      <strong>${c.name}</strong>
+                      <br><small class="text-muted">Docente: ${c.teacherName || '—'}</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger"
+                      onclick="removeFromCart('${c.courseId}')"
+                      aria-label="Quitar ${c.name} del carrito">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>`).join('')}
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body text-center">
+                <h5>Confirmar Matrícula</h5>
+                <p class="text-muted small">${courses.length} curso(s) seleccionado(s)</p>
+                <button class="btn btn-success w-100 btn-lg" onclick="confirmEnrollment()"
+                  aria-label="Confirmar matrícula en todos los cursos del carrito">
+                  <i class="bi bi-check-circle me-1"></i>Matricularme
+                </button>
+                <a href="course-search.html" class="btn btn-outline-primary w-100 mt-2">
+                  Seguir buscando
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    async function removeFromCart(courseId) {
+      await fetch(`/api/enrollment/cart/${courseId}`, { method: 'DELETE' });
+      loadCart();
+    }
+
+    async function confirmEnrollment() {
+      const res = await fetch('/api/enrollment/confirm', { method: 'POST' });
+      if (res.ok) {
+        showToast('¡Matrícula confirmada exitosamente!', 'success');
+        setTimeout(() => window.location.href = 'dashboard-student.html', 1500);
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Error al confirmar matrícula', 'danger');
+      }
+    }
+
+    loadCart();
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+  </script>
+</body>
+</html>

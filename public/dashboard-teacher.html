@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Docente — TEC Digitalito</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="dashboard-teacher.html">
+        <i class="bi bi-mortarboard-fill me-2"></i>TEC Digitalito
+      </a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <a href="messages.html" class="btn btn-outline-secondary btn-sm" aria-label="Mensajes">
+          <i class="bi bi-chat-dots"></i>
+        </a>
+        <span class="text-muted small" id="userGreeting"></span>
+        <button class="btn btn-outline-danger btn-sm" id="logoutBtn" aria-label="Cerrar sesión">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-2 sidebar py-3 d-none d-md-block" aria-label="Navegación principal">
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link active" href="dashboard-teacher.html"><i class="bi bi-house"></i> Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="course-edit.html"><i class="bi bi-plus-circle"></i> Crear curso</a></li>
+          <li class="nav-item"><a class="nav-link" href="messages.html"><i class="bi bi-chat-dots"></i> Mensajes</a></li>
+          <li class="nav-item"><a class="nav-link" href="users-search.html"><i class="bi bi-people"></i> Usuarios</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html"><i class="bi bi-person-circle"></i> Mi perfil</a></li>
+        </ul>
+      </nav>
+
+      <main class="col-md-10 py-4 px-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3>Mis Cursos</h3>
+          <a href="course-edit.html" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>Crear nuevo curso
+          </a>
+        </div>
+        <div id="coursesContainer" class="row g-3">
+          <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    checkAuth(['teacher', 'admin']).then(user => {
+      document.getElementById('userGreeting').textContent = `Hola, ${user.username}`;
+    });
+
+    fetch('/api/courses/my')
+      .then(r => r.json())
+      .then(courses => {
+        const container = document.getElementById('coursesContainer');
+        if (!courses.length) {
+          container.innerHTML = '<div class="col-12"><div class="alert alert-info">No tienes cursos creados aún. <a href="course-edit.html">Crea tu primer curso</a>.</div></div>';
+          return;
+        }
+        container.innerHTML = courses.map(c => `
+          <div class="col-md-4">
+            <div class="card course-card h-100">
+              ${c.photoFileId ? `<img src="/api/files/${c.photoFileId}" alt="Foto del curso ${c.name}" class="course-img">` : '<div class="course-img bg-light d-flex align-items-center justify-content-center"><i class="bi bi-book fs-1 text-secondary"></i></div>'}
+              <div class="card-body">
+                <span class="badge bg-secondary mb-1">${c.code}</span>
+                ${c.published ? '<span class="badge bg-success mb-1 ms-1">Publicado</span>' : '<span class="badge bg-warning text-dark mb-1 ms-1">Borrador</span>'}
+                <h5 class="card-title mt-1">${c.name}</h5>
+                <p class="card-text text-muted small">${formatDate(c.startDate)}${c.endDate ? ' – ' + formatDate(c.endDate) : ''}</p>
+                <div class="d-flex gap-2 mt-3">
+                  <a href="course-edit.html?id=${c.courseId}" class="btn btn-sm btn-outline-primary" aria-label="Editar curso ${c.name}">
+                    <i class="bi bi-pencil"></i> Editar
+                  </a>
+                  <a href="course-view.html?id=${c.courseId}" class="btn btn-sm btn-outline-secondary" aria-label="Ver curso ${c.name}">
+                    <i class="bi bi-eye"></i> Ver
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      });
+
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+  </script>
+</body>
+</html>

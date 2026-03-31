@@ -1,0 +1,27 @@
+{
+  "name": "tec-digitalito",
+  "version": "1.0.0",
+  "main": "indice.js",
+  "scripts": {
+    "start": "node indice.js",
+    "dev": "nodemon indice.js",
+    "db:init-mongo": "docker exec -it mongo1 mongosh --eval \"rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo1:27017'},{_id:1,host:'mongo2:27017'},{_id:2,host:'mongo3:27017'}]})\""
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
+    "neo4j-driver": "^5.15.0",
+    "mongoose": "^8.0.3",
+    "redis": "^4.6.12",
+    "cassandra-driver": "^4.7.2",
+    "bcrypt": "^5.1.1",
+    "uuid": "^9.0.0",
+    "multer": "^2.0.0",
+    "nodemailer": "^6.9.8",
+    "cookie-parser": "^1.4.6",
+    "express-validator": "^7.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

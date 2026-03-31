@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Estudiante — TEC Digitalito</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="dashboard-student.html">
+        <i class="bi bi-mortarboard-fill me-2"></i>TEC Digitalito
+      </a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <a href="messages.html" class="btn btn-outline-secondary btn-sm" aria-label="Mensajes">
+          <i class="bi bi-chat-dots"></i>
+        </a>
+        <span class="text-muted small" id="userGreeting">Cargando...</span>
+        <button class="btn btn-outline-danger btn-sm" id="logoutBtn" aria-label="Cerrar sesión">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-2 sidebar py-3 d-none d-md-block" aria-label="Navegación principal">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="dashboard-student.html" aria-label="Inicio">
+              <i class="bi bi-house"></i> Inicio
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="enrollment.html" aria-label="Mis cursos">
+              <i class="bi bi-book"></i> Mis cursos
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="course-search.html" aria-label="Buscar cursos">
+              <i class="bi bi-search"></i> Buscar cursos
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="messages.html" aria-label="Mensajes">
+              <i class="bi bi-chat-dots"></i> Mensajes
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="users-search.html" aria-label="Usuarios">
+              <i class="bi bi-people"></i> Usuarios
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="profile.html" aria-label="Mi perfil">
+              <i class="bi bi-person-circle"></i> Mi perfil
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main content -->
+      <main class="col-md-10 py-4 px-4">
+        <h3 class="mb-4">Mis Cursos Matriculados</h3>
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+          <a href="course-search.html" class="btn btn-primary">
+            <i class="bi bi-search me-1"></i>Buscar y matricular cursos
+          </a>
+          <a href="enrollment.html" class="btn btn-outline-primary">
+            <i class="bi bi-cart me-1"></i>Carrito de matrícula
+          </a>
+        </div>
+        <div id="coursesContainer" class="row g-3">
+          <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    checkAuth(['student', 'teacher', 'admin']).then(user => {
+      document.getElementById('userGreeting').textContent = `Hola, ${user.fullName || user.username}`;
+    });
+
+    fetch('/api/enrollment/my-courses')
+      .then(r => r.json())
+      .then(courses => {
+        const container = document.getElementById('coursesContainer');
+        if (!courses.length) {
+          container.innerHTML = '<div class="col-12"><div class="alert alert-info">No estás matriculado en ningún curso. <a href="course-search.html">Busca cursos aquí</a>.</div></div>';
+          return;
+        }
+        container.innerHTML = courses.map(c => `
+          <div class="col-md-4">
+            <div class="card course-card h-100" onclick="window.location.href='course-view.html?id=${c.courseId}'">
+              ${c.photoFileId ? `<img src="/api/files/${c.photoFileId}" alt="Foto del curso ${c.name}" class="course-img">` : '<div class="course-img bg-secondary opacity-25 d-flex align-items-center justify-content-center"><i class="bi bi-book fs-1 text-white"></i></div>'}
+              <div class="card-body">
+                <span class="badge bg-secondary mb-1">${c.code || ''}</span>
+                <h5 class="card-title">${c.name}</h5>
+                <p class="card-text text-muted small">${c.teacherName || 'Docente'}</p>
+                <span class="badge bg-${c.status === 'active' ? 'success' : 'secondary'}">${c.status === 'active' ? 'Activo' : 'Completado'}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      })
+      .catch(() => {
+        document.getElementById('coursesContainer').innerHTML = '<div class="col-12"><div class="alert alert-danger">Error cargando cursos.</div></div>';
+      });
+
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+  </script>
+</body>
+</html>

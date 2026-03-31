@@ -1,0 +1,129 @@
+services:
+  # ─── MongoDB Replica Set (3 nodos) ───────────────────────────────────────
+  mongo1:
+    image: mongo:7.0
+    container_name: mongo1
+    hostname: mongo1
+    command: mongod --replSet rs0 --bind_ip_all
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo1_data:/data/db
+    networks:
+      - dbnet
+
+  mongo2:
+    image: mongo:7.0
+    container_name: mongo2
+    hostname: mongo2
+    command: mongod --replSet rs0 --bind_ip_all
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo2_data:/data/db
+    networks:
+      - dbnet
+
+  mongo3:
+    image: mongo:7.0
+    container_name: mongo3
+    hostname: mongo3
+    command: mongod --replSet rs0 --bind_ip_all
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo3_data:/data/db
+    networks:
+      - dbnet
+
+  # ─── Redis (1 master + 2 replicas + 3 sentinels) ─────────────────────────
+  redis-master:
+    image: redis:7.2-alpine
+    container_name: redis-master
+    command: redis-server --save 60 1 --loglevel warning
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_master_data:/data
+    networks:
+      - dbnet
+
+  redis-replica-1:
+    image: redis:7.2-alpine
+    container_name: redis-replica-1
+    command: redis-server --replicaof redis-master 6379
+    ports:
+      - "6380:6379"
+    depends_on:
+      - redis-master
+    networks:
+      - dbnet
+
+  redis-replica-2:
+    image: redis:7.2-alpine
+    container_name: redis-replica-2
+    command: redis-server --replicaof redis-master 6379
+    ports:
+      - "6381:6379"
+    depends_on:
+      - redis-master
+    networks:
+      - dbnet
+
+  redis-sentinel-1:
+    image: redis:7.2-alpine
+    container_name: redis-sentinel-1
+    command: >
+      sh -c "echo 'sentinel monitor mymaster redis-master 6379 2' > /sentinel.conf &&
+             echo 'sentinel down-after-milliseconds mymaster 5000' >> /sentinel.conf &&
+             echo 'sentinel failover-timeout mymaster 10000' >> /sentinel.conf &&
+             echo 'sentinel parallel-syncs mymaster 1' >> /sentinel.conf &&
+             redis-sentinel /sentinel.conf"
+    ports:
+      - "26379:26379"
+    depends_on:
+      - redis-master
+    networks:
+      - dbnet
+
+  redis-sentinel-2:
+    image: redis:7.2-alpine
+    container_name: redis-sentinel-2
+    command: >
+      sh -c "echo 'sentinel monitor mymaster redis-master 6379 2' > /sentinel.conf &&
+             echo 'sentinel down-after-milliseconds mymaster 5000' >> /sentinel.conf &&
+             echo 'sentinel failover-timeout mymaster 10000' >> /sentinel.conf &&
+             echo 'sentinel parallel-syncs mymaster 1' >> /sentinel.conf &&
+             redis-sentinel /sentinel.conf"
+    ports:
+      - "26380:26379"
+    depends_on:
+      - redis-master
+    networks:
+      - dbnet
+
+  redis-sentinel-3:
+    image: redis:7.2-alpine
+    container_name: redis-sentinel-3
+    command: >
+      sh -c "echo 'sentinel monitor mymaster redis-master 6379 2' > /sentinel.conf &&
+             echo 'sentinel down-after-milliseconds mymaster 5000' >> /sentinel.conf &&
+             echo 'sentinel failover-timeout mymaster 10000' >> /sentinel.conf &&
+             echo 'sentinel parallel-syncs mymaster 1' >> /sentinel.conf &&
+             redis-sentinel /sentinel.conf"
+    ports:
+      - "26381:26379"
+    depends_on:
+      - redis-master
+    networks:
+      - dbnet
+
+volumes:
+  mongo1_data:
+  mongo2_data:
+  mongo3_data:
+  redis_master_data:
+
+networks:
+  dbnet:
+    driver: bridge

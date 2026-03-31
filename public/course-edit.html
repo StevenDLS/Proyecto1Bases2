@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Curso — TEC Digitalito</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="dashboard-teacher.html"><i class="bi bi-mortarboard-fill me-2"></i>TEC Digitalito</a>
+      <div class="ms-auto">
+        <button class="btn btn-outline-danger btn-sm" id="logoutBtn" aria-label="Cerrar sesión">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="d-flex align-items-center mb-4">
+      <a href="dashboard-teacher.html" class="btn btn-outline-secondary btn-sm me-3" aria-label="Volver">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <h3 class="mb-0" id="pageTitle">Crear Curso</h3>
+    </div>
+
+    <!-- Formulario del curso -->
+    <div class="row g-4">
+      <div class="col-md-7">
+        <div class="card">
+          <div class="card-header"><h5 class="mb-0">Información del Curso</h5></div>
+          <div class="card-body">
+            <div id="alertBox" class="alert d-none" role="alert" aria-live="polite"></div>
+            <form id="courseForm">
+              <div class="mb-3">
+                <label for="code" class="form-label">Código <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="code" aria-label="Código del curso" required>
+              </div>
+              <div class="mb-3">
+                <label for="name" class="form-label">Nombre <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="name" aria-label="Nombre del curso" required>
+              </div>
+              <div class="mb-3">
+                <label for="description" class="form-label">Descripción</label>
+                <textarea class="form-control" id="description" rows="3" aria-label="Descripción del curso"></textarea>
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                  <label for="startDate" class="form-label">Fecha inicio <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control" id="startDate" aria-label="Fecha de inicio" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="endDate" class="form-label">Fecha fin (opcional)</label>
+                  <input type="date" class="form-control" id="endDate" aria-label="Fecha de fin">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="coursePhoto" class="form-label">Foto del curso</label>
+                <input type="file" class="form-control" id="coursePhoto" accept="image/*" aria-label="Foto del curso">
+              </div>
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary" aria-label="Guardar curso">
+                  <i class="bi bi-save me-1"></i>Guardar
+                </button>
+                <button type="button" id="publishBtn" class="btn btn-success d-none" aria-label="Publicar curso">
+                  <i class="bi bi-globe me-1"></i>Publicar
+                </button>
+                <button type="button" id="cloneBtn" class="btn btn-outline-secondary d-none" aria-label="Clonar curso">
+                  <i class="bi bi-copy me-1"></i>Clonar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Secciones (solo si es edición) -->
+      <div class="col-md-5" id="sectionsPanel" style="display:none!important">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Secciones</h5>
+            <button class="btn btn-sm btn-outline-light" id="addRootSectionBtn"
+              aria-label="Agregar sección raíz">
+              <i class="bi bi-plus"></i> Agregar
+            </button>
+          </div>
+          <div class="card-body p-2" id="sectionTreeContainer">
+            <p class="text-muted text-center small p-2">Sin secciones aún.</p>
+          </div>
+        </div>
+
+        <!-- Evaluaciones -->
+        <div class="card mt-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Evaluaciones</h5>
+            <button class="btn btn-sm btn-outline-light" id="addEvalBtn" aria-label="Crear evaluación">
+              <i class="bi bi-plus"></i>
+            </button>
+          </div>
+          <div class="list-group list-group-flush" id="evalsList">
+            <p class="text-muted text-center small p-2">Sin evaluaciones.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal agregar sección -->
+  <div class="modal fade" id="sectionModal" tabindex="-1" aria-labelledby="sectionModalLabel">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="sectionModalLabel">Nueva Sección</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="sectionTitle" class="form-label">Título <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="sectionTitle" aria-label="Título de la sección" required>
+          </div>
+          <div class="mb-3">
+            <label for="sectionOrder" class="form-label">Orden</label>
+            <input type="number" class="form-control" id="sectionOrder" value="0" min="0" aria-label="Orden de la sección">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="saveSectionBtn" aria-label="Guardar sección">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/courses.js"></script>
+</body>
+</html>

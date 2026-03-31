@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluación — TEC Digitalito</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="javascript:history.back()"><i class="bi bi-mortarboard-fill me-2"></i>TEC Digitalito</a>
+      <div class="ms-auto">
+        <button class="btn btn-outline-danger btn-sm" id="logoutBtn" aria-label="Cerrar sesión">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div id="mainContent">
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal crear evaluación (modo docente) -->
+  <div class="modal fade" id="createEvalModal" tabindex="-1" aria-labelledby="createEvalModalLabel">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createEvalModalLabel">Crear Evaluación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="createEvalBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="saveEvalBtn" aria-label="Guardar evaluación">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    const evalId = getQueryParam('id');
+    const courseId = getQueryParam('courseId');
+    const mode = getQueryParam('mode');
+
+    checkAuth().then(async user => {
+      const main = document.getElementById('mainContent');
+
+      if (mode === 'create' && (user.role === 'teacher' || user.role === 'admin')) {
+        renderCreateForm(main, courseId, user);
+        return;
+      }
+
+      if (evalId) {
+        const res = await fetch(`/api/evaluations/detail/${evalId}`);
+        if (!res.ok) { main.innerHTML = '<div class="alert alert-danger">Evaluación no encontrada.</div>'; return; }
+        const evaluation = await res.json();
+        renderEvaluation(main, evaluation, user);
+      }
+    });
+
+    function renderCreateForm(container, courseId, user) {
+      container.innerHTML = `
+        <h3 class="mb-4">Crear Evaluación</h3>
+        <div class="card">
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="evalTitle" class="form-label">Título <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="evalTitle" aria-label="Título de la evaluación" required>
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-md-6">
+                <label for="evalStart" class="form-label">Fecha inicio <span class="text-danger">*</span></label>
+                <input type="datetime-local" class="form-control" id="evalStart" aria-label="Fecha de inicio" required>
+              </div>
+              <div class="col-md-6">
+                <label for="evalEnd" class="form-label">Fecha fin <span class="text-danger">*</span></label>
+                <input type="datetime-local" class="form-control" id="evalEnd" aria-label="Fecha de fin" required>
+              </div>
+            </div>
+            <hr>
+            <h5>Preguntas</h5>
+            <div id="questionsContainer"></div>
+            <button type="button" class="btn btn-outline-primary mt-2" onclick="addQuestion()" aria-label="Agregar pregunta">
+              <i class="bi bi-plus"></i> Agregar pregunta
+            </button>
+            <hr>
+            <button type="button" class="btn btn-primary" onclick="saveEvaluation()" aria-label="Guardar evaluación">
+              <i class="bi bi-save me-1"></i>Guardar evaluación
+            </button>
+          </div>
+        </div>`;
+      addQuestion();
+    }
+
+    let questionCount = 0;
+    window.addQuestion = () => {
+      questionCount++;
+      const qId = `q${questionCount}`;
+      const div = document.createElement('div');
+      div.id = `question_${qId}`;
+      div.className = 'card mb-3';
+      div.innerHTML = `
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <label for="${qId}_text" class="form-label fw-bold">Pregunta ${questionCount}</label>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.card').remove()" aria-label="Eliminar pregunta">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+          <input type="text" class="form-control mb-2 q-text" id="${qId}_text" placeholder="Texto de la pregunta" aria-label="Texto de la pregunta ${questionCount}" required>
+          <div class="options-container" id="${qId}_options">
+            ${[0,1].map(i => optionHtml(qId, i)).join('')}
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-secondary mt-1"
+            onclick="addOption('${qId}_options', '${qId}')" aria-label="Agregar opción">
+            <i class="bi bi-plus"></i> Opción
+          </button>
+        </div>`;
+      document.getElementById('questionsContainer').appendChild(div);
+    };
+
+    window.addOption = (containerId, qId) => {
+      const container = document.getElementById(containerId);
+      const count = container.querySelectorAll('.option-item').length;
+      const div = document.createElement('div');
+      div.innerHTML = optionHtml(qId, count);
+      container.appendChild(div.firstElementChild);
+    };
+
+    function optionHtml(qId, idx) {
+      return `
+        <div class="option-item d-flex align-items-center gap-2 mb-1">
+          <input type="radio" name="${qId}_correct" value="${idx}" class="form-check-input" aria-label="Esta opción es correcta">
+          <input type="text" class="form-control form-control-sm option-text" placeholder="Opción ${idx+1}" aria-label="Texto de la opción ${idx+1}" required>
+        </div>`;
+    }
+
+    window.saveEvaluation = async () => {
+      const title = document.getElementById('evalTitle').value.trim();
+      const startDate = document.getElementById('evalStart').value;
+      const endDate = document.getElementById('evalEnd').value;
+      if (!title || !startDate || !endDate) { showToast('Completa todos los campos', 'danger'); return; }
+
+      const questionCards = document.querySelectorAll('#questionsContainer .card');
+      const questions = [];
+      for (const card of questionCards) {
+        const text = card.querySelector('.q-text').value.trim();
+        if (!text) continue;
+        const optionEls = card.querySelectorAll('.option-item');
+        const correctRadio = card.querySelector('input[type="radio"]:checked');
+        const correctIdx = correctRadio ? parseInt(correctRadio.value) : 0;
+        const options = [];
+        optionEls.forEach((el, idx) => {
+          const t = el.querySelector('.option-text').value.trim();
+          if (t) options.push({ text: t, isCorrect: idx === correctIdx });
+        });
+        questions.push({ text, options });
+      }
+
+      if (!questions.length) { showToast('Agrega al menos una pregunta', 'danger'); return; }
+
+      const res = await fetch(`/api/evaluations/${courseId}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, startDate: new Date(startDate).toISOString(), endDate: new Date(endDate).toISOString(), questions })
+      });
+      if (res.ok) {
+        showToast('Evaluación creada', 'success');
+        setTimeout(() => window.location.href = `course-edit.html?id=${courseId}`, 1000);
+      } else {
+        const d = await res.json();
+        showToast(d.error || 'Error al crear evaluación', 'danger');
+      }
+    };
+
+    function renderEvaluation(container, evaluation, user) {
+      container.innerHTML = `
+        <h3 class="mb-1">${evaluation.title}</h3>
+        <p class="text-muted small mb-4">${formatDate(evaluation.startDate)} – ${formatDate(evaluation.endDate)}</p>
+        <form id="evalSubmitForm">
+          ${evaluation.questions.map((q, qi) => `
+            <div class="card mb-3">
+              <div class="card-body">
+                <p class="fw-bold">${qi+1}. ${q.text}</p>
+                <div class="evaluation-option" role="radiogroup" aria-label="Opciones para la pregunta ${qi+1}">
+                  ${q.options.map((o, oi) => `
+                    <div>
+                      <input type="radio" id="q${qi}_o${oi}" name="q${qi}"
+                        value="${o.optionId}" class="visually-hidden" aria-label="${o.text}">
+                      <label for="q${qi}_o${oi}">${o.text}</label>
+                    </div>`).join('')}
+                </div>
+              </div>
+            </div>`).join('')}
+          <button type="submit" class="btn btn-primary btn-lg w-100" aria-label="Enviar respuestas">
+            <i class="bi bi-send me-1"></i>Enviar respuestas
+          </button>
+        </form>`;
+
+      document.getElementById('evalSubmitForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const answers = evaluation.questions.map((q, qi) => {
+          const selected = document.querySelector(`input[name="q${qi}"]:checked`);
+          return { questionId: q.questionId, selectedOptionId: selected ? selected.value : null };
+        });
+
+        const res = await fetch(`/api/evaluations/submit/${evaluation.evaluationId}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers, courseId: courseId || evaluation.courseId })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          container.innerHTML = `
+            <div class="text-center py-5">
+              <div class="score-circle ${data.score >= 70 ? 'score-pass' : 'score-fail'} mx-auto mb-3">
+                ${Math.round(data.score)}%
+              </div>
+              <h4>${data.score >= 70 ? '¡Aprobado!' : 'No aprobado'}</h4>
+              <p class="text-muted">${data.correctCount} de ${data.totalQuestions} respuestas correctas</p>
+              <a href="results.html?courseId=${courseId || evaluation.courseId}" class="btn btn-primary"
+                aria-label="Ver todos mis resultados">Ver mis resultados</a>
+            </div>`;
+        } else {
+          showToast(data.error || 'Error al enviar', 'danger');
+        }
+      });
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+  </script>
+</body>
+</html>
