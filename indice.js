@@ -8,10 +8,13 @@ app.get('/', (req, res) => {
     res.send('Servidor Node.js corriendo en la VM');
 });
 
+app.get('/inicio', (req, res) => {
+  res.sendFile(path.join(__dirname, 'inicio.html'));
+});
+
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
-
 
 app.post('/signup', async (req, res) => {
     try {
