@@ -4,18 +4,10 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-
-app.use(function (req, res, next) {
-    console.log("Middleware called");
-    next();
-});
+app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/inicio.html');
-});
-
-app.get('/SignUp.html', (req, res) => {
-    res.sendFile(__dirname + '/SignUp.html');
+    res.sendFile(path.join(__dirname, 'inicio.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {
