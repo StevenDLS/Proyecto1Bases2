@@ -10,12 +10,16 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`);
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/inicio.html');
 });
 
-app.post('/submit', (req, res) => {
-  res.send('Form Submitted Successfully!');
+app.get('/SignUp.html', (req, res) => {
+    res.sendFile(__dirname + '/SignUp.html');
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
 
 app.post('/signup', async (req, res) => {
