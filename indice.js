@@ -47,7 +47,7 @@ const start = async () => {
     console.warn('Cassandra no disponible (configura CASSANDRA_CONTACT_POINTS en .env):', err.message)
   );
 
-  app.listen(process.env.PORT || 3000, () => {
+  app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
     console.log(`TEC Digitalito corriendo en puerto ${process.env.PORT || 3000}`);
   });
 };
