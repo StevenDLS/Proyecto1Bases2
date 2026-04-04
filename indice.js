@@ -50,6 +50,7 @@ const start = async () => {
   //await connectRedis();
   //await connectMongoDB();
   await initNeo4j();
+  await initCassandra();
 };
 
 start();
