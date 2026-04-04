@@ -40,6 +40,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/inicio.html'));
 });
 
+app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
+    console.log(`TEC Digitalito corriendo en puerto ${process.env.PORT || 3000}`);
+});
+
 const start = async () => {
   await connectRedis();
   await connectMongoDB();
