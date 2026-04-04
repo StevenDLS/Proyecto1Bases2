@@ -37,7 +37,7 @@ app.use('/api/files', fileRoutes);
 app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public'));
+    res.sendFile(path.join(__dirname, 'public/inicio.htnl'));
 });
 
 const start = async () => {
