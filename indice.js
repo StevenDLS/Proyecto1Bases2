@@ -36,15 +36,11 @@ app.use('/api/users', userRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/admin', adminRoutes);
 
-//app.get('/', (req, res) => {
-//    res.sendFile(path.join(__dirname, 'public/inicio.html'));
-//});
-
-app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
-    console.log(`TEC Digitalito corriendo en puerto ${process.env.PORT || 3000}`);
-});
-
 const start = async () => {
+  app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
+    console.log(`TEC Digitalito corriendo en puerto ${process.env.PORT || 3000}`);
+  });
+
   await connectRedis();
   await connectMongoDB();
 
@@ -54,10 +50,6 @@ const start = async () => {
   initCassandra().catch(err =>
     console.warn('Cassandra no disponible (configura CASSANDRA_CONTACT_POINTS en .env):', err.message)
   );
-
-  app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
-    console.log(`TEC Digitalito corriendo en puerto ${process.env.PORT || 3000}`);
-  });
 };
 
 start();
