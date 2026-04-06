@@ -47,10 +47,8 @@ const start = async () => {
   //initCassandra().catch(err =>
   //  console.warn('Cassandra no disponible (configura CASSANDRA_CONTACT_POINTS en .env):', err.message)
   //);
-  //await connectRedis();
-  //await connectMongoDB();
-  await initNeo4j();
-  await initCassandra();
+  //await initNeo4j();
+  //await initCassandra();
 };
 
 start();
