@@ -35,12 +35,11 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/admin', adminRoutes);
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/start.html'));
+});
 
 const start = async () => {
-  app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/start.html'));
-  });
-
   app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
     console.log(`TEC Digitalito corriendo en puerto ${process.env.PORT || 3000}`);
   });
