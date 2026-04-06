@@ -37,6 +37,10 @@ app.use('/api/files', fileRoutes);
 app.use('/api/admin', adminRoutes);
 
 const start = async () => {
+  app.get('/', (req, res) => {
+    res.sendFile('start.html');
+  });
+
   app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
     console.log(`TEC Digitalito corriendo en puerto ${process.env.PORT || 3000}`);
   });
