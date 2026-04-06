@@ -41,14 +41,14 @@ const start = async () => {
     console.log(`TEC Digitalito corriendo en puerto ${process.env.PORT || 3000}`);
   });
 
-  //initNeo4j().catch(err =>
-  //  console.warn('Neo4j no disponible (configura NEO4J_URI en .env):', err.message)
-  //);
-  //initCassandra().catch(err =>
-  //  console.warn('Cassandra no disponible (configura CASSANDRA_CONTACT_POINTS en .env):', err.message)
-  //);
-  //await initNeo4j();
-  //await initCassandra();
+  initNeo4j().catch(err =>
+    console.warn('Neo4j no disponible (configura NEO4J_URI en .env):', err.message)
+  );
+  initCassandra().catch(err =>
+    console.warn('Cassandra no disponible (configura CASSANDRA_CONTACT_POINTS en .env):', err.message)
+  );
+  await initNeo4j();
+  await initCassandra();
 };
 
 start();
