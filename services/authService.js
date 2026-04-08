@@ -72,10 +72,10 @@ const loginUser = async (username, password, ip, device) => {
     throw err;
   }
 
+  /*
   // 4. Login exitoso — limpiar intentos
   await redisClient.del(`login_attempts:${username}`);
-
-  /*
+  
   // 5. Crear sesión en Redis
   const sessionId = uuidv4();
   const sessionData = {
