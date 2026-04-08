@@ -44,10 +44,10 @@ router.post('/login', async (req, res) => {
   try {
     const { sessionId, user } = await authService.loginUser(username, password, ip, device);
 
-    res.cookie('sessionId', sessionId, {
-      httpOnly: true
-      //maxAge: (parseInt(process.env.SESSION_TTL_SECONDS) || 86400) * 1000
-    });
+    //res.cookie('sessionId', sessionId, {
+    //  httpOnly: true,
+    //  maxAge: (parseInt(process.env.SESSION_TTL_SECONDS) || 86400) * 1000
+    //});
 
     if (rememberMe) {
       const token = await authService.createRememberToken(user.userId, user.username);
