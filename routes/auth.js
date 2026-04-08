@@ -43,6 +43,7 @@ router.post('/login', async (req, res) => {
 
   try {
     const { sessionId, user } = await authService.loginUser(username, password, ip, device);
+    console.log("h\n");
 
     //res.cookie('sessionId', sessionId, {
     //  httpOnly: true,
