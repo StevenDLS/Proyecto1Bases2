@@ -46,6 +46,7 @@ const loginUser = async (username, password, ip, device) => {
 
   // 2. Buscar usuario en Neo4j
   const session = getSession();
+  console.log("working");
   let user;
   try {
     const result = await session.run(
