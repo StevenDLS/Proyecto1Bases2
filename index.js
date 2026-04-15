@@ -51,6 +51,12 @@ const start = async () => {
   initCassandra().catch(err =>
     console.warn('Cassandra no disponible (configura CASSANDRA_CONTACT_POINTS en .env):', err.message)
   );
+  connectMongoDB().catch(err =>
+    console.warn('Mongodb no disponible (configura MONGODB_URI en .env):', err.message)
+  );
+  connectRedis().catch(err =>
+    console.warn('Redis no disponible (configura REDIS_HOST y REDIS_PORT en .env):', err.message)
+  );
 };
 
 start();
