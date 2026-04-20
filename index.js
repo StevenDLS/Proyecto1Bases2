@@ -59,6 +59,10 @@ const start = async () => {
   );
 };
 
+const mongoose = require('mongoose');
+const { GridFSBucket } = require('mongodb');
+require('dotenv').config();
+
 const test = async () => {
   await mongoose.connect(process.env.MONGODB_URI);
   gfsBucket = new GridFSBucket(mongoose.connection.db, { bucketName: 'uploads' });
