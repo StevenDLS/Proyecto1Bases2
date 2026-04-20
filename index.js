@@ -59,27 +59,4 @@ const start = async () => {
   );
 };
 
-const mongoose = require('mongoose');
-const { GridFSBucket } = require('mongodb');
-require('dotenv').config();
-
-const test = async () => {
-  await mongoose.connect(process.env.MONGODB_URI);
-  gfsBucket = new GridFSBucket(mongoose.connection.db, { bucketName: 'uploads' });
-  console.log('MongoDB: conectado al Replica Set');
-
-  const testSchema = new mongoose.Schema({
-
-    text: String
-  })
-
-  const testModel = mongoose.model('test', testSchema)
-
-  await testModel.create({ text: '1' });
-
-  const collections = await mongoose.connection.db.listCollections().toArray();
-  console.log(collections.map(c => c.name));
-}
-
 start();
-//test();
