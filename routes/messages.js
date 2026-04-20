@@ -21,9 +21,8 @@ router.post('/', requireAuth, async (req, res) => {
   }
   try {
     const thread = await messageService.createThread(
-      req.user.id, recipientIds, subject || '(sin asunto)', content
+      req.user.userId, recipientIds, subject || '(sin asunto)', content
     );
-    
     res.status(201).json(thread);
   } catch (err) {
     res.status(500).json({ error: err.message });
