@@ -1,4 +1,4 @@
-const { connectMongoDB } = require('./config/mongodb');
+const mongoose = require('mongoose');
 
 const SectionContent = mongoose.models.SectionContent ||
   mongoose.model('SectionContent', new mongoose.Schema({
