@@ -193,9 +193,9 @@
         showToast('Selecciona un destinatario y escribe un mensaje', 'warning');
         return;
       }
-      const res = await fetch('/api/messages', {//Error en la API
+      const res = await fetch('/api/auth/messages', {//Error en la API
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipientIds: [Number(selectedRecipientId)], subject, content: content.trim() })
+        body: JSON.stringify({ recipientIds: [selectedRecipientId], subject, content })
       });
       if (res.ok) {
         bootstrap.Modal.getInstance(document.getElementById('newThreadModal')).hide();
