@@ -19,7 +19,7 @@ router.get('/:sectionId', requireAuth, async (req, res) => {
 });
 
 // PUT /api/content/:sectionId — reemplazar contenido completo (solo text items)
-router.post('/:sectionId', requireAuth, requireRole('teacher', 'admin'), async (req, res) => {
+router.put('/:sectionId', requireAuth, requireRole('teacher', 'admin'), async (req, res) => {
   try {
     await contentService.updateContent(req.params.sectionId, req.body.items || []);
     res.json({ message: 'Contenido actualizado' });
