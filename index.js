@@ -59,4 +59,11 @@ const start = async () => {
   );
 };
 
-start();
+const test = async () => {
+  await mongoose.connect(process.env.MONGODB_URI);
+  gfsBucket = new GridFSBucket(mongoose.connection.db, { bucketName: 'uploads' });
+  console.log('MongoDB: conectado al Replica Set');
+}
+
+//start();
+test();
