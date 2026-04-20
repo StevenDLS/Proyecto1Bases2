@@ -26,7 +26,7 @@ router.post('/', requireAuth, async (req, res) => {
     
     res.status(201).json(thread);
   } catch (err) {
-    res.status(500).json({ error: 'Error interno' });
+    res.status(500).json({ error: err.message });
   }
 });
 
