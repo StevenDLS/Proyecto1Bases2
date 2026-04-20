@@ -195,7 +195,7 @@
       }
       const res = await fetch('/api/messages', {//Error en la API
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipientIds: [selectedRecipientId], subject, content })
+        body: JSON.stringify({ recipientIds: [Number(selectedRecipientId)], subject, content: content.trim() })
       });
       if (res.ok) {
         bootstrap.Modal.getInstance(document.getElementById('newThreadModal')).hide();
