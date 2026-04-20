@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+await mongoose.connect(process.env.MONGODB_URI);
+
 const SectionContent = mongoose.models.SectionContent ||
   mongoose.model('SectionContent', new mongoose.Schema({
     sectionId: { type: String, required: true, unique: true },
