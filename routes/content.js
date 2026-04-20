@@ -14,12 +14,12 @@ router.get('/:sectionId', requireAuth, async (req, res) => {
     const items = await contentService.getContent(req.params.sectionId);
     res.json(items);
   } catch (err) {
-    res.status(500).json({ error: 'Error interno' });
+    res.status(500).json({ error: 'Error interno' }); 
   }
 });
 
 // PUT /api/content/:sectionId — reemplazar contenido completo (solo text items)
-router.put('/:sectionId', requireAuth, requireRole('teacher', 'admin'), async (req, res) => {
+router.post('/:sectionId', requireAuth, requireRole('teacher', 'admin'), async (req, res) => {
   try {
     await contentService.updateContent(req.params.sectionId, req.body.items || []);
     res.json({ message: 'Contenido actualizado' });
