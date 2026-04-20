@@ -36,8 +36,6 @@ const registerUser = async ({ username, password, fullName, birthDate, email, ro
 };
 
 const loginUser = async (username, password, ip, device) => {
-  // Usar esto cuando tengamos Redis listo!!!!!!!
-  /*
   // 1. Verificar bloqueo
   const locked = await redisClient.get(`locked:${username}`);
   if (locked) {
@@ -45,7 +43,6 @@ const loginUser = async (username, password, ip, device) => {
     err.status = 403;
     throw err;
   }
-  */
 
   // 2. Buscar usuario en Neo4j
   const session = getSession();
