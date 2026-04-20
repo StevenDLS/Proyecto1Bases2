@@ -69,6 +69,7 @@ const test = async () => {
   console.log('MongoDB: conectado al Replica Set');
 
   const testSchema = new mongoose.Schema({
+
     text: String
   })
 
@@ -80,5 +81,5 @@ const test = async () => {
   console.log(collections.map(c => c.name));
 }
 
-//start();
-test();
+start();
+//test();
