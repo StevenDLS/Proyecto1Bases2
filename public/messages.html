@@ -193,7 +193,7 @@
         showToast('Selecciona un destinatario y escribe un mensaje', 'warning');
         return;
       }
-      const res = await fetch('/api/auth/messages', {//Error en la API
+      const res = await fetch('/api/messages', {//Error en la API
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recipientIds: [selectedRecipientId], subject, content })
       });
@@ -201,6 +201,9 @@
         bootstrap.Modal.getInstance(document.getElementById('newThreadModal')).hide();
         loadThreads();
         showToast('Mensaje enviado', 'success');
+      }else {
+        const d = await res.json();
+        showToast(d.error || 'Error al enviar mensaje', 'danger');
       }
     });
 
