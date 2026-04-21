@@ -20,8 +20,8 @@ router.post('/register',
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     try {
-      const { avatarFileId } = req.body;
-      const user = await authService.registerUser({ ...req.body, avatarFileId: avatarFileId || null });
+      const { avatar } = req.body;
+      const user = await authService.registerUser({ ...req.body, avatarFileId: avatar || null });
       res.status(201).json({ message: 'Usuario registrado', user });
     } catch (err) {
       if (err.message && err.message.includes('already exists')) {
