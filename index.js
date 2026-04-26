@@ -60,3 +60,5 @@ const start = async () => {
 };
 
 start();
+const locked = await redisClient.get(`locked:'steven2005ls'`);
+console.log(locked);
