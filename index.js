@@ -57,8 +57,8 @@ const start = async () => {
   connectRedis().catch(err =>
     console.warn('Redis no disponible (configura REDIS_HOST y REDIS_PORT en .env):', err.message)
   );
-  const locked = await redisClient.get(`locked:'javi0409'`);
-  console.log(locked);
+  const result = await redisClient.run(`SCAN 0 MATCH locked:* COUNT 100`);
+  console.log(result);
 };
 
 start();
