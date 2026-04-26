@@ -75,7 +75,7 @@ router.put('/users/:userId/block', requireAuth, requireRole('admin'), async (req
       `MATCH (u:User {userId: $userId}) SET u.blocked = $blocked`,
       { userId: req.params.userId, blocked: !!blocked }
     );
-    await redisClient.run(`SET locked:${username} "0"`);
+    await redisClient.setEx(`locked:${username}`, LOCK_TTL, '1');
     res.json({ message: blocked ? 'Usuario bloqueado' : 'Usuario desbloqueado' });
   } catch (err) {
     res.status(500).json({ error: 'Error interno' });
