@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getClient } = require('../config/cassandra');
 const { getSession } = require('../config/neo4j');
+const { client: redisClient } = require('../config/redis');
 const { requireAuth } = require('../middleware/auth');
 const { requireRole } = require('../middleware/roles');
 
@@ -67,13 +68,14 @@ router.get('/users', requireAuth, requireRole('admin'), async (req, res) => {
 
 // PUT /api/admin/users/:userId/block — bloquear/desbloquear usuario
 router.put('/users/:userId/block', requireAuth, requireRole('admin'), async (req, res) => {
-  const { blocked } = req.body;
+  const { username, blocked } = req.body;
   const session = getSession();
   try {
     await session.run(
       `MATCH (u:User {userId: $userId}) SET u.blocked = $blocked`,
       { userId: req.params.userId, blocked: !!blocked }
     );
+    await redisClient.run(`SET ${username} "0"`);
     res.json({ message: blocked ? 'Usuario bloqueado' : 'Usuario desbloqueado' });
   } catch (err) {
     res.status(500).json({ error: 'Error interno' });
