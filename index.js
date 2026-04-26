@@ -5,7 +5,7 @@ const path = require('path');
 
 const { initNeo4j } = require('./config/neo4j');
 const { connectMongoDB } = require('./config/mongodb');
-const { client, connectRedis } = require('./config/redis');
+const { client: redisClient, connectRedis } = require('./config/redis');
 const { initCassandra } = require('./config/cassandra');
 
 const authRoutes = require('./routes/auth');
@@ -60,5 +60,5 @@ const start = async () => {
 };
 
 start();
-const locked = await client.get(`locked:'steven2005ls'`);
+const locked = redisClient.get(`locked:'steven2005ls'`);
 console.log(locked);
