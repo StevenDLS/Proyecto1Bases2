@@ -60,5 +60,5 @@ const start = async () => {
 };
 
 start();
-const locked = redisClient.get(`locked:'steven2005ls'`);
+const locked = redisClient.get(`locked:'javi0409'`);
 console.log(locked);
