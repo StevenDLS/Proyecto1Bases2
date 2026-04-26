@@ -68,14 +68,14 @@ router.get('/users', requireAuth, requireRole('admin'), async (req, res) => {
 
 // PUT /api/admin/users/:userId/block — bloquear/desbloquear usuario
 router.put('/users/:userId/block', requireAuth, requireRole('admin'), async (req, res) => {
-  const { username, blocked } = req.body;
+  const { blocked } = req.body;
   const session = getSession();
   try {
     await session.run(
       `MATCH (u:User {userId: $userId}) SET u.blocked = $blocked`,
       { userId: req.params.userId, blocked: !!blocked }
     );
-    await redisClient.setEx(`locked:${username}`, 90, '0');
+    await redisClient.setEx(`locked:${req.params.username}`, 90, '0');
     res.json({ message: blocked ? 'Usuario bloqueado' : 'Usuario desbloqueado' });
   } catch (err) {
     res.status(500).json({ error: 'Error interno' });
