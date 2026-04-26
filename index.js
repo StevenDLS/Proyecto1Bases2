@@ -57,7 +57,7 @@ const start = async () => {
   connectRedis().catch(err =>
     console.warn('Redis no disponible (configura REDIS_HOST y REDIS_PORT en .env):', err.message)
   );
-  const result = await redisClient.sendCommand(`SCAN 0 MATCH locked:* COUNT 100`);
+  const result = await redisClient.sendCommand('SCAN' , 0 , 'MATCH' , 'locked:*', 'COUNT', 100);
   console.log(result);
 };
 
