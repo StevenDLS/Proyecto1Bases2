@@ -7,7 +7,7 @@ const { requireAuth } = require('../middleware/auth');
 const upload = multer({ storage: multer.memoryStorage() });
 
 // POST /api/files/upload
-router.post('/upload', requireAuth, upload.single('file'), async (req, res) => {
+router.post('/upload', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Archivo requerido' });
   try {
     const fileId = await fileService.uploadFile(
