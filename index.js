@@ -5,7 +5,7 @@ const path = require('path');
 
 const { initNeo4j } = require('./config/neo4j');
 const { connectMongoDB } = require('./config/mongodb');
-const { connectRedis } = require('./config/redis');
+const { client: redisClient, connectRedis } = require('./config/redis');
 const { initCassandra } = require('./config/cassandra');
 
 const authRoutes = require('./routes/auth');
