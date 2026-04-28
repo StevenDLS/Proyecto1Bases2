@@ -71,7 +71,7 @@ router.put('/users/:userId/block', requireAuth, requireRole('admin'), async (req
   const { blocked } = req.body;
   const session = getSession();
   try {
-    console.log(req.params.username);
+    console.log(req.params.userId);
     await session.run(
       `MATCH (u:User {userId: $userId}) SET u.blocked = $blocked`,
       { userId: req.params.userId, blocked: !!blocked }
@@ -80,7 +80,7 @@ router.put('/users/:userId/block', requireAuth, requireRole('admin'), async (req
       await redisClient.set(`locked:${req.params.username}`, '1');
     }
     else {
-      await redisClient.set(`locked:${req.params.username}`, '0');
+      await redisClient.del(`locked:${req.params.username}`);
     }
     res.json({ message: blocked ? 'Usuario bloqueado' : 'Usuario desbloqueado' });
   } catch (err) {
