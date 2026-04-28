@@ -77,10 +77,10 @@ router.put('/users/:userId/block', requireAuth, requireRole('admin'), async (req
       { userId: req.params.userId, blocked: !!blocked }
     );
     if (blocked) {
-      await redisClient.set(`locked:${req.params.username}`, '1');
+      await redisClient.set(`locked:${username}`, '1');
     }
     else {
-      await redisClient.del(`locked:${req.params.username}`);
+      await redisClient.del(`locked:${username}`);
     }
     res.json({ message: blocked ? 'Usuario bloqueado' : 'Usuario desbloqueado' });
   } catch (err) {
