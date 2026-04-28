@@ -71,6 +71,7 @@ router.put('/users/:userId/block', requireAuth, requireRole('admin'), async (req
   const { blocked } = req.body;
   const session = getSession();
   try {
+    console.log(req.params.username);
     await session.run(
       `MATCH (u:User {userId: $userId}) SET u.blocked = $blocked`,
       { userId: req.params.userId, blocked: !!blocked }
