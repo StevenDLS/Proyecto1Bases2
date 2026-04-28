@@ -101,7 +101,7 @@
           <td><span class="badge bg-${u.blocked ? 'danger' : 'success'}">${u.blocked ? 'Bloqueado' : 'Activo'}</span></td>
           <td>
             <button class="btn btn-sm btn-${u.blocked ? 'success' : 'warning'}"
-              onclick="toggleBlock('${u.userId}', ${u.username}', ${!u.blocked})"
+              onclick="toggleBlock('${u.userId}', '${u.username}', ${!u.blocked})"
               aria-label="${u.blocked ? 'Desbloquear' : 'Bloquear'} usuario ${u.username}">
               <i class="bi bi-${u.blocked ? 'unlock' : 'lock'}"></i>
               ${u.blocked ? 'Desbloquear' : 'Bloquear'}
