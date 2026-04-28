@@ -121,7 +121,7 @@
     async function toggleBlock(userId, blocked) {
       const res = await fetch(`/api/admin/users/${userId}/block`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ blocked })
+        body: JSON.stringify({ blocked, username })
       });
       if (res.ok) {
         const u = allUsers.find(x => x.userId === userId);
