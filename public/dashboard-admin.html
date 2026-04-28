@@ -101,7 +101,7 @@
           <td><span class="badge bg-${u.blocked ? 'danger' : 'success'}">${u.blocked ? 'Bloqueado' : 'Activo'}</span></td>
           <td>
             <button class="btn btn-sm btn-${u.blocked ? 'success' : 'warning'}"
-              onclick="toggleBlock('${u.userId}', ${!u.blocked})"
+              onclick="toggleBlock('${u.userId}', ${u.username}', ${!u.blocked})"
               aria-label="${u.blocked ? 'Desbloquear' : 'Bloquear'} usuario ${u.username}">
               <i class="bi bi-${u.blocked ? 'unlock' : 'lock'}"></i>
               ${u.blocked ? 'Desbloquear' : 'Bloquear'}
@@ -118,10 +118,10 @@
       ));
     });
 
-    async function toggleBlock(userId, blocked) {
+    async function toggleBlock(userId, username, blocked) {
       const res = await fetch(`/api/admin/users/${userId}/block`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ blocked, username })
+        body: JSON.stringify({ blocked , username})
       });
       if (res.ok) {
         const u = allUsers.find(x => x.userId === userId);
