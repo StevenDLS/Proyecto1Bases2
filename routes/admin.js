@@ -68,7 +68,7 @@ router.get('/users', requireAuth, requireRole('admin'), async (req, res) => {
 
 // PUT /api/admin/users/:userId/block — bloquear/desbloquear usuario
 router.put('/users/:userId/block', requireAuth, requireRole('admin'), async (req, res) => {
-  const { blocked } = req.body;
+  const { blocked, username} = req.body;
   const session = getSession();
   console.log(req.body);
   try {
