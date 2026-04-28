@@ -42,12 +42,8 @@ router.post('/login', async (req, res) => {
   const device = req.headers['user-agent'] || 'unknown';
 
   try {
-    // Usar esto cuando tengamos Redis listo!!!!!!!
     const { sessionId, user } = await authService.loginUser(username, password, ip, device);
 
-    //const { user } = await authService.loginUser(username, password, ip, device);
-
-    // Usar esto cuando tengamos Redis listo!!!!!!!
     res.cookie('sessionId', sessionId, {
       httpOnly: true,
       maxAge: (parseInt(process.env.SESSION_TTL_SECONDS) || 86400) * 1000
